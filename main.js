@@ -5,6 +5,8 @@ var Menu = electron.Menu;
 var crashReporter = electron.crashReporter;
 const shell = electron.shell;
 var menu, template;
+const TrustedSite = process.env.TRUSTED;
+
 
 crashReporter.start({
   productName: 'GraphiQL',
@@ -17,6 +19,15 @@ var mainWindow = null;
 
 app.on('window-all-closed', function() {
   if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  if (url === TrustedSite) {
+    event.preventDefault()
+    callback(true)
+  } else {
+    callback(false)
+  }
 });
 
 
